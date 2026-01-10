@@ -2,7 +2,7 @@ Absolutely! We can turn your help text into a **well-structured README.md** that
 
 ---
 
-````markdown
+
 # Gen-CLI
 
 **Gen-CLI** is a Python-based tool to generate boilerplate code and framework templates for multiple programming languages.
