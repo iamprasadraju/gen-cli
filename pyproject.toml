@@ -1,9 +1,10 @@
 [project]
 name = "gen-cli"
 version = "0.1.0"
-description = "Add your description here"
+description = "Gen-CLI is a Python-based tool to generate boilerplate code and framework templates for multiple programming languages."
 readme = "README.md"
 requires-python = ">=3.13"
+license = { file = "LICENSE" }
 
 authors = [{ name = "Prasad Raju G" }]
 dependencies = []
@@ -14,3 +15,9 @@ build-backend = "setuptools.build_meta"
 
 [project.scripts]
 gen = "gen.cli:main"
+
+[tool.setuptools]
+package-dir = { "" = "src" }
+
+[tool.setuptools.packages.find]
+where = ["src"]
