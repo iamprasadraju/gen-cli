@@ -11,8 +11,19 @@ def main():
 
     cmd = sys.argv[1]
 
-    if cmd in ("--list", "list"):
-        list_.list_langtemplates()
+    if cmd == "lang":
+        try:
+            if sys.argv[2] == "--list":
+                list_.list_langtemplates()
+        except:
+            print("Usage: gen lang --list")
+
+    elif cmd in ["framework", "lib"]:
+        try:
+            if sys.argv[2] == "--list":
+                list_.list_framtemplates()
+        except:
+            print("Usage: gen framework/lib --list")
     elif cmd in ["-h", "--help", "help"]:
         helper.help()
     elif "." in cmd:
@@ -21,7 +32,7 @@ def main():
             if len(parts) != 2:
                 raise ValueError("Filename must contain exactly one extension.")
         except IndexError:
-            print("Usage: gen <filename.extension>")
+            print("Usage: gen <filename.extension> (To create a file)")
             sys.exit(1)
         except ValueError as e:
             print(e)
@@ -54,4 +65,4 @@ def main():
             print("Usage: gen new <dir name> --<lang> --<framework>")
 
     else:
-        print("Usage: gen <filename.extension>")
+        print("Usage: gen <filename.extension> (To create a file)")
