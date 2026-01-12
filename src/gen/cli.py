@@ -51,7 +51,7 @@ def main():
                 )
                 template.gen_framtemplate(dir_name, lang, framework)
         except IndexError:
-            print("gen new <dir name> --<lang> --<framework>")
+            print("Usage: gen new <dir name> --<lang> --<framework>")
 
     else:
         print("Usage: gen <filename.extension>")
