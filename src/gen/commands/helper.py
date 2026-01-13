@@ -45,6 +45,31 @@ Help:
     gen help                          Show this message.
 """
 
+commands = """
+
+List of Commands:
+
+    Listing:
+        gen lang --list (Display all available language templates)
+
+        gen framework/lib --list (Display all available language templates)
+
+    Tree view:
+        gen tree (Display tree view of file structure from current directory)
+
+        gen tree --<lang> <framework> (Display the file structure of framework)
+
+    Generating Templates:
+        gen <filename.extension> (Create the file with Boiler Plate code)
+
+        gen new <dir_naem> --<lang> --<framework> (Create dir with framework tempalte)
+
+"""
+
 
 def help():
     print(HELP_TEXT)
+
+
+def list_commands():
+    print(commands)

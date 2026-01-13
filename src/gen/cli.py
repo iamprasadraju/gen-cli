@@ -14,9 +14,9 @@ def main():
     if cmd == "lang":
         try:
             if sys.argv[2] == "--list":
-                list_.list_langtemplates()
+                list_.list_langtemplates(EXTENSION_MAP)
         except:
-            print("Usage: gen lang --list")
+            helper.list_commands()
 
     elif cmd in ["--tree", "tree"]:
         list_.tree_view()
@@ -26,7 +26,8 @@ def main():
             if sys.argv[2] == "--list":
                 list_.list_framtemplates()
         except:
-            print("Usage: gen framework/lib --list")
+            helper.list_commands()
+
     elif cmd in ["-h", "--help", "help"]:
         helper.help()
     elif "." in cmd:
@@ -40,11 +41,8 @@ def main():
         except ValueError as e:
             print(e)
             sys.exit(1)
-
         filename, extension = parts[0], "." + parts[1]
-
         flag = sys.argv[2] if len(sys.argv) > 2 else None
-
         if flag:
             template.gen_langtemplate(filename, extension, flag=flag)
         else:
