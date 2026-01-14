@@ -2,6 +2,8 @@ import os
 from importlib import resources
 from pathlib import Path
 
+from gen.config import EXTENSION_MAP
+
 # Get the current working directory
 current_dir = os.getcwd()
 
@@ -11,15 +13,23 @@ templates_path = resources.files("gen.templates")
 
 
 # Prints the Language Templates
-def list_langtemplates(EXTENSION_MAP):
-    print("Available Language Templates: ")
+def list_langtemplates():
+    print("\nList of available Language Templates: ")
+    print("--------------------------------------")
     for lang in EXTENSION_MAP.values():
         print("   -", lang)
+    print("")
 
 
 # Placeholder for a function that lists frame templates
 def list_framtemplates(path=templates_path, prefix: str = ""):
-    pass
+    hide_folder = ["__pycache__"]
+    print("\nList of available Frameworks Templates:")
+    print("--------------------------------------")
+    print_tree(
+        path=templates_path, show_files=False, max_depth=2, hide_folders=hide_folder
+    )
+    print("")
 
 
 # Prints the directory tree for the current directory
@@ -33,6 +43,7 @@ def print_tree(
     show_files: bool = True,
     max_depth: int | None = None,
     current_depth: int = 0,
+    hide_folders=[],
 ):
     """Recursively prints the directory tree structure with optional depth limit."""
 
@@ -51,7 +62,7 @@ def print_tree(
         is_last = index == len(items) - 1
         connector = "└── " if is_last else "├── "
 
-        if item.is_dir():
+        if item.is_dir() and item.name not in hide_folders:
             print(f"{prefix}{connector}{item.name}/")
             new_prefix = prefix + ("    " if is_last else "│   ")
             print_tree(

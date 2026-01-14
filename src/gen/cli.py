@@ -14,7 +14,7 @@ def main():
     if cmd == "lang":
         try:
             if sys.argv[2] == "--list":
-                list_.list_langtemplates(EXTENSION_MAP)
+                list_.list_langtemplates()
         except:
             helper.list_commands()
 
@@ -33,12 +33,13 @@ def main():
         try:
             if sys.argv[2] == "--list":
                 list_.list_framtemplates()
-        except:
+        except Exception as e:
+            print(e)
             helper.list_commands()
 
     elif cmd in ["-h", "--help", "help"]:
         helper.help()
-    elif "." in cmd:
+    elif "." in cmd and len(sys.argv) == 2:
         try:
             parts = sys.argv[1].split(".")
             if len(parts) != 2:
@@ -50,20 +51,19 @@ def main():
             print(e)
             sys.exit(1)
         filename, extension = parts[0], "." + parts[1]
-        flag = sys.argv[2] if len(sys.argv) > 2 else None
-        if flag:
-            template.gen_langtemplate(filename, extension, flag=flag)
+        if extension in EXTENSION_MAP.keys():
+            flag = sys.argv[2] if len(sys.argv) > 2 else None
+            if flag:
+                template.gen_langtemplate(filename, extension, flag=flag)
+            else:
+                template.gen_langtemplate(filename, extension)
         else:
-            template.gen_langtemplate(filename, extension)
-
+            print("Template does not exist.")
+            list_.list_langtemplates()
     # check wheather lang has templates
     elif cmd == "new":
         try:
-            if (
-                "--" in sys.argv[3]
-                and sys.argv[3][2:] in EXTENSION_MAP.values()
-                and "--" in sys.argv[4]
-            ):
+            if "--" in sys.argv[3] and "--" in sys.argv[4]:
                 dir_name, lang, framework = (
                     sys.argv[2],
                     sys.argv[3][2:],
@@ -72,6 +72,8 @@ def main():
                 template.gen_framtemplate(dir_name, lang, framework)
         except IndexError:
             print("Usage: gen new <dir name> --<lang> --<framework>")
+        except Exception as e:
+            print(e)
 
     else:
         print("Usage: gen <filename.extension> (To create a file)")
