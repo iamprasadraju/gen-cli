@@ -18,8 +18,16 @@ def main():
         except:
             helper.list_commands()
 
+    # This has to be fix (Exception Handling)
     elif cmd in ["--tree", "tree"]:
-        list_.tree_view()
+        try:
+            max_depth = sys.argv[2]
+            if max_depth == "-r":
+                list_.tree_view(None)
+            else:
+                list_.tree_view(max_depth=int(max_depth[1:]))
+        except:
+            list_.tree_view(max_depth=1)
 
     elif cmd in ["framework", "lib"]:
         try:

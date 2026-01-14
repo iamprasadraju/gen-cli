@@ -23,15 +23,26 @@ def list_framtemplates(path=templates_path, prefix: str = ""):
 
 
 # Prints the directory tree for the current directory
-def tree_view():
-    print_tree(Path(current_dir))
+def tree_view(max_depth):
+    print_tree(Path(current_dir), max_depth=max_depth)
 
 
-def print_tree(path: Path, prefix: str = "", show_files: bool = True):
-    """Recursively prints the directory tree structure."""
+def print_tree(
+    path: Path,
+    prefix: str = "",
+    show_files: bool = True,
+    max_depth: int | None = None,
+    current_depth: int = 0,
+):
+    """Recursively prints the directory tree structure with optional depth limit."""
+
     # Print the root folder name once
     if prefix == "":
         print(f"{path.name}/")
+
+    # Stop if we've reached the maximum depth
+    if max_depth is not None and current_depth >= max_depth:
+        return
 
     # Get all items, sort them: directories first, then files
     items = sorted(path.iterdir(), key=lambda x: (not x.is_dir(), x.name.lower()))
@@ -43,6 +54,12 @@ def print_tree(path: Path, prefix: str = "", show_files: bool = True):
         if item.is_dir():
             print(f"{prefix}{connector}{item.name}/")
             new_prefix = prefix + ("    " if is_last else "│   ")
-            print_tree(item, new_prefix, show_files)
+            print_tree(
+                item,
+                new_prefix,
+                show_files,
+                max_depth,
+                current_depth + 1,
+            )
         elif show_files:
             print(f"{prefix}{connector}{item.name}")
