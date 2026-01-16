@@ -14,4 +14,4 @@ FRAMEWORK_CMD = {
 }
 
 
-FRAMEWORK_JINJA = ["python/project"]
+FRAMEWORK_JINJA = ["python/project", "python/lib"]
