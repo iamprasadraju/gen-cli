@@ -1,44 +1,122 @@
-
 # Gen-CLI
 
-**Gen-CLI** is a Python-based tool to generate boilerplate code and framework templates for multiple programming languages.
+**Gen-CLI** is a Python-based command-line tool for generating boilerplate code and
+framework templates for multiple programming languages.
 
-It supports both single-file and full project generation using templates, making it easy to start projects quickly.
+It supports:
+- Single-file boilerplate generation based on file extension
+- Project scaffolding using language and framework templates
+- Directory tree visualization
+- Environment diagnostics
+
+---
+
+## Installation
+
+```bash
+pip install gen-cli
+````
+
+*or run from source*
+
+```bash
+git clone https://github.com/yourname/gen-cli.git
+cd gen-cli
+python -m gen
+```
 
 ---
 
 ## Usage
 
 ```bash
-gen <command> [options]
-````
+gen <command> [arguments]
+```
 
 ---
 
 ## Commands
 
-| Command  | Description                              |
-| -------- | ---------------------------------------- |
-| `list`   | List available languages and frameworks. |
-| `doctor` | Check environment and configuration.     |
-| `help`   | Show this help message.                  |
+### `help`
+
+Show the help message.
+
+```bash
+gen help
+gen --help
+gen -h
+```
 
 ---
 
-## Options (for `new` command)
+### `list`
 
-| Option                  | Description                                         |
-| ----------------------- | --------------------------------------------------- |
-| `--dry-run`             | Show what would be generated without writing files. |
-| `--overwrite`           | Overwrite existing files if they exist.             |
-| `--project-name <name>` | Name to use in templates (default: `myapp`).        |
-| `--author <name>`       | Author name to use in templates (optional).         |
+List all available language templates.
+
+```bash
+gen list
+```
 
 ---
 
-## Supported Languages & Frameworks
+### `doctor`
 
-| Language   | Frameworks             |
+Check environment and configuration.
+
+```bash
+gen doctor
+```
+
+---
+
+### `tree`
+
+Display a tree view of the directory structure.
+
+```bash
+gen tree
+gen tree -r           # recursive
+gen tree -3           # depth = 3
+gen tree path/to/dir
+```
+
+---
+
+### `new`
+
+Generate a new project using a language and framework template.
+
+```bash
+gen new <project_name> --lang <language> --template <framework>
+```
+
+#### Example
+
+```bash
+gen new myapp --lang python --template fastapi
+```
+
+> ⚠️ Both `--lang` and `--template` flags are required.
+
+---
+
+### Single File Generation
+
+Generate a boilerplate file based on its extension.
+
+```bash
+gen main.py
+gen app.go
+gen index.js
+```
+
+The tool determines the template automatically using the file extension.
+
+---
+
+## Supported Languages & Templates
+
+| Language   | Templates              |
 | ---------- | ---------------------- |
 | Python     | flask, fastapi, django |
 | Go         | cli, web               |
@@ -51,34 +129,60 @@ gen <command> [options]
 
 ---
 
-## Examples
+## Directory Tree Example
 
-```bash
-# Generate a single file using Python Flask template
-gen new main.py python flask --project-name myapp
-
-# Generate a full FastAPI project
-gen new myapp python fastapi --dry-run
-
-# Generate a Go CLI project
-gen new app.go go cli
-
-# List all supported languages and frameworks
-gen list
-
-# Check environment
-gen doctor
+```text
+project/
+├── main.py
+├── app/
+│   ├── __init__.py
+│   └── routes.py
+└── README.md
 ```
 
 ---
 
-## Help
+## Error Handling
 
-```bash
-gen help
-```
-
-Show the general help message.
+* Invalid commands show the help message
+* Invalid file extensions list supported templates
+* Tree command falls back to current directory on error
 
 ---
 
+## Project Structure
+
+```text
+gen/
+├── commands/
+│   ├── helper.py
+│   ├── list_.py
+│   └── template.py
+├── config.py
+└── main.py
+```
+
+---
+
+## Limitations
+
+* Argument parsing is manual (`sys.argv`)
+* Flags must follow exact order for `new`
+* No interactive mode
+* No plugin system
+
+---
+
+## Roadmap
+
+* [ ] Migrate to argparse / typer
+* [ ] Improve error messages
+* [ ] Add interactive project generator
+* [ ] Add template registry
+* [ ] Add shell auto-completion
+
+---
+
+## License
+
+MIT License
