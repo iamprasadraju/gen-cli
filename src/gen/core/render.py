@@ -1,4 +1,5 @@
 import os
+import shutil
 from importlib import resources
 from pathlib import Path
 
@@ -42,3 +43,5 @@ def render_framework(template_dir, target_root, context):
 
                 output_file.parent.mkdir(parents=True, exist_ok=True)
                 output_file.write_text(content)
+            else:
+                shutil.copy(template_file, output_file)
