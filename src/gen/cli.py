@@ -9,7 +9,7 @@ current_dir = os.getcwd()
 
 def main():
     if len(sys.argv) < 2:
-        helper.help()
+        helper.concise_help()
         return
 
     cmd = sys.argv[1]
@@ -19,8 +19,10 @@ def main():
             if sys.argv[2] == "--list":
                 list_.list_langtemplates()
         except:
-            helper.list_commands()
-
+            helper.concise_help()
+    elif cmd in ["--list", "list"]:
+        list_.list_langtemplates()
+        list_.list_framtemplates()
     # This has to be fix (Exception Handling)
     elif cmd in ["--tree", "tree"]:
         path = current_dir
@@ -51,13 +53,13 @@ def main():
             print(f"tree error: {e}")
             list_.tree_view(path=current_dir, depth=1)
 
-    elif cmd in ["framework", "lib"]:
+    elif cmd == "template":
         try:
             if sys.argv[2] == "--list":
                 list_.list_framtemplates()
         except Exception as e:
             print(e)
-            helper.list_commands()
+            helper.concise_help()
 
     elif cmd in ["-h", "--help", "help"]:
         helper.help()
@@ -67,7 +69,7 @@ def main():
             if len(parts) != 2:
                 raise ValueError("Filename must contain exactly one extension.")
         except IndexError:
-            print("Usage: gen <filename.extension> (To create a file)")
+            helper.concise_help()
             sys.exit(1)
         except ValueError as e:
             print(e)
@@ -83,19 +85,26 @@ def main():
             print("Template does not exist.")
             list_.list_langtemplates()
     # check wheather lang has templates
-    elif cmd == "new":
+    elif cmd == "new":  # gen new <project/dir> --lang<lang> --template<framework/lib>
         try:
-            if "--" in sys.argv[3] and "--" in sys.argv[4]:
-                dir_name, lang, framework = (
+            if (
+                (len(sys.argv) >= 7)
+                and (sys.argv[3] == "--lang")
+                and (sys.argv[5] == "--template")
+            ):
+                dir_name, lang, framework_template = (
                     sys.argv[2],
-                    sys.argv[3][2:],
-                    sys.argv[4][2:],
+                    sys.argv[4],
+                    sys.argv[6],
                 )
-                template.gen_framtemplate(dir_name, lang, framework)
+
+                template.gen_framtemplate(dir_name, lang, framework_template)
+            else:
+                helper.concise_help()
         except IndexError:
-            print("Usage: gen new <dir name> --<lang> --<framework>")
+            helper.concise_help()
         except Exception as e:
             print(e)
 
     else:
-        print("Usage: gen <filename.extension> (To create a file)")
+        helper.concise_help()

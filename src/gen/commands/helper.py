@@ -81,5 +81,5 @@ def help():
     print(HELP_TEXT)
 
 
-def list_commands():
+def concise_help():
     print(COMMANDS_TEXT)
