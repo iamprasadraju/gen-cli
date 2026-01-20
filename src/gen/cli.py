@@ -63,7 +63,7 @@ def main():
 
     elif cmd in ["-h", "--help", "help"]:
         helper.help()
-    elif "." in cmd and len(sys.argv) == 2:
+    elif "." in cmd and len(sys.argv) >= 2:
         try:
             parts = sys.argv[1].split(".")
             if len(parts) != 2:
