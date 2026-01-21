@@ -41,7 +41,7 @@ def gen_langtemplate(file, extension, flag=None):
                 print(f"{filename} overwrited!")
 
 
-def gen_framtemplate(dir_name, lang, framework):
+def gen_framtemplate(dir_name, lang, framework, flag):
     key = f"{lang}/{framework}"
     if key in FRAMEWORK_CMD:
         cmds = [c.format(project_name=dir_name) for c in FRAMEWORK_CMD[value]]
@@ -62,7 +62,10 @@ def gen_framtemplate(dir_name, lang, framework):
 
     target_root.mkdir(parents=True)
 
-    if key in FRAMEWORK_JINJA:
+    if flag == "--dryrun":
+        list_.print_tree(framework_path)
+
+    elif key in FRAMEWORK_JINJA:
         context = {"project_name": dir_name}
         render_framework(framework_path, target_root, context)
         print(f"'{dir_name}' Created using template '{key}'")

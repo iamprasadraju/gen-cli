@@ -92,13 +92,14 @@ def main():
                 and (sys.argv[3] == "--lang")
                 and (sys.argv[5] == "--template")
             ):
-                dir_name, lang, framework_template = (
+                dir_name, lang, framework_template, flag = (
                     sys.argv[2],
                     sys.argv[4],
                     sys.argv[6],
+                    sys.argv[7],
                 )
 
-                template.gen_framtemplate(dir_name, lang, framework_template)
+                template.gen_framtemplate(dir_name, lang, framework_template, flag)
             else:
                 helper.concise_help()
         except IndexError:

@@ -9,9 +9,11 @@ EXTENSION_MAP = {
     ".html": "html",
 }
 
+
+# For those has framework commands for project creation
 FRAMEWORK_CMD = {
     "python/django": ["pip install django", "django-admin startproject {project_name}"]
 }
 
-
+# For those uses jinja template
 FRAMEWORK_JINJA = ["python/project", "python/lib"]
