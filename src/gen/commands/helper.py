@@ -18,10 +18,8 @@ NEW COMMAND:
 OPTIONS (for `new`):
     --lang <language>         Programming language
     --template <template>    Framework or template name
-    --dry-run                Show output without writing files
+    --dryrun                Show output without writing files
     --overwrite              Overwrite existing files
-    --project-name <name>    Name used inside templates
-    --author <name>          Author name (optional)
 
 SUPPORTED LANGUAGES & TEMPLATES:
     Python:     flask, fastapi, django
@@ -34,11 +32,11 @@ SUPPORTED LANGUAGES & TEMPLATES:
     HTML:       standard
 
 EXAMPLES:
-    # Generate a single Python Flask file
-    gen new main.py --lang python --template flask
+    # Generate a single Python file
+    gen main.py
 
     # Generate a FastAPI project (dry run)
-    gen new myapp --lang python --template fastapi --dry-run
+    gen new myapp --lang python --template fastapi --dryrun
 
     # Generate a Go CLI project
     gen new mytool --lang go --template cli
@@ -59,6 +57,9 @@ HELP:
 
 COMMANDS_TEXT = """
 AVAILABLE COMMANDS:
+
+    gen <filename.extension>
+        Generate a single Python file
 
     gen new <project|file> --lang <language> --template <template>
         Generate a project or file from templates
