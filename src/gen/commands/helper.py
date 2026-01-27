@@ -1,3 +1,8 @@
+class colors:
+    GREEN = "\033[92m"
+    ENDC = "\033[0m"
+
+
 HELP_TEXT = """
 Gen-CLI — Generate boilerplate files and framework project templates
 for multiple programming languages.
@@ -79,8 +84,8 @@ AVAILABLE COMMANDS:
 
 
 def help():
-    print(HELP_TEXT)
+    print(colors.GREEN + HELP_TEXT + colors.ENDC)
 
 
 def concise_help():
-    print(COMMANDS_TEXT)
+    print(colors.GREEN + COMMANDS_TEXT + colors.ENDC)

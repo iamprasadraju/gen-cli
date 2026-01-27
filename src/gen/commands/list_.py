@@ -6,6 +6,15 @@ from gen.config import EXTENSION_MAP
 # Get the current working directory
 
 
+class colors:
+    RED = "\033[91m"
+    GREEN = "\033[92m"
+    YELLOW = "\033[93m"
+    BLUE = "\033[94m"
+    PURPLE = "\033[0;35m"
+    ENDC = "\033[0m"
+
+
 # Get the path to the templates directory in the "gen" module
 templates_path = resources.files("gen.templates")
 
@@ -61,7 +70,8 @@ def print_tree(
         connector = "└── " if is_last else "├── "
 
         if item.is_dir() and item.name not in hide_folders:
-            print(f"{prefix}{connector}{item.name}/")
+            # folders
+            print(f"{colors.GREEN}{prefix}{connector}{item.name}{colors.ENDC}/")
             new_prefix = prefix + ("    " if is_last else "│   ")
             print_tree(
                 item,
@@ -71,4 +81,5 @@ def print_tree(
                 current_depth + 1,
             )
         elif show_files:
-            print(f"{prefix}{connector}{item.name}")
+            # files
+            print(f"{prefix}{connector}{colors.PURPLE}{item.name}{colors.ENDC}")
