@@ -6,11 +6,24 @@ from importlib.metadata import version
 from gen.commands import helper, list_, template, doctor
 from gen.config import EXTENSION_MAP
 
-current_dir = os.getcwd()
-
 
 def get_version():
     return version("gen-cli")
+
+
+def handle_filename(filename, dryrun=False, overwrite=False):
+    name, ext = os.path.splitext(filename)
+    if not ext:
+        raise argparse.ArgumentTypeError(
+            "Filename must have an extension (e.g. main.py)"
+        )
+
+    if ext not in EXTENSION_MAP:
+        print(f"Template for {ext} does not exist.")
+        list_.list_langtemplates()
+        return
+
+    template.gen_langtemplate(name, ext, dryrun=dryrun, overwrite=overwrite)
 
 
 def handle_filename(filename, dryrun=False, overwrite=False):
@@ -48,30 +61,25 @@ def parse_command_mode():
 
     subparsers = parser.add_subparsers(dest="command", metavar="<command>")
 
-    # gen lang --list
     lang_parser = subparsers.add_parser("lang", help="Language operations")
     lang_parser.add_argument(
         "--list", action="store_true", help="List language templates"
     )
 
-    # gen list
     subparsers.add_parser("list", help="List all templates")
 
-    # gen tree -r / -d
     tree_parser = subparsers.add_parser("tree", help="Show directory tree")
-    tree_parser.add_argument(
-        "path", nargs="?", default=current_dir, help="Directory path"
-    )
+    tree_parser.add_argument("path", nargs="?", default=None, help="Directory path")
     tree_parser.add_argument("-r", action="store_true", help="Recursive (all levels)")
-    tree_parser.add_argument("-d", type=int, default=1, help="Depth level (default: 1)")
+    tree_parser.add_argument(
+        "-d", type=int, default=None, dest="depth", help="Depth level"
+    )
 
-    # gen template --list
     template_parser = subparsers.add_parser("template", help="Template operations")
     template_parser.add_argument(
         "--list", action="store_true", help="List framework templates"
     )
 
-    # gen new
     new_parser = subparsers.add_parser("new", help="Generate a new project")
     new_parser.add_argument("dir_name", help="Project name")
     new_parser.add_argument("--lang", required=True, help="Programming language")
@@ -80,7 +88,6 @@ def parse_command_mode():
         "--dryrun", action="store_true", help="Preview without creating files"
     )
 
-    # gen doctor
     subparsers.add_parser("doctor", help="Check environment and configuration")
 
     args = parser.parse_args()
@@ -104,8 +111,25 @@ def parse_command_mode():
         list_.list_framtemplates()
 
     elif args.command == "tree":
-        path = os.path.join(current_dir, args.path)
-        depth = None if args.r else args.d
+        depth = 1
+        path = os.getcwd()
+
+        if args.r:
+            depth = None
+        elif args.depth:
+            depth = args.depth
+        elif args.path and args.path.startswith("-"):
+            try:
+                depth = int(args.path[1:])
+            except ValueError:
+                pass
+
+        if args.path and not args.path.startswith("-"):
+            if os.path.isdir(args.path):
+                path = args.path
+            else:
+                path = args.path
+
         list_.tree_view(path=path, depth=depth)
 
     elif args.command == "template":
