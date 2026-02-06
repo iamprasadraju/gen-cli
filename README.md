@@ -328,8 +328,3 @@ MIT License
 
 Prasad Raju G
 
----
-
-## Repository
-
-https://github.com/iamprasadraju/gen-cli
