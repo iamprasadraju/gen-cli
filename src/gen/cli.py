@@ -1,3 +1,4 @@
+import argparse
 import os
 import sys
 
@@ -7,108 +8,111 @@ from gen.config import EXTENSION_MAP
 current_dir = os.getcwd()
 
 
-def main():
-    if len(sys.argv) < 2:
-        helper.concise_help()
+def handle_filename(filename, dryrun=False, overwrite=False):
+    name, ext = os.path.splitext(filename)
+    if not ext:
+        raise argparse.ArgumentTypeError(
+            "Filename must have an extension (e.g. main.py)"
+        )
+
+    if ext not in EXTENSION_MAP:
+        print(f"Template for {ext} does not exist.")
+        list_.list_langtemplates()
         return
 
-    cmd = sys.argv[1]
+    template.gen_langtemplate(name, ext, dryrun=dryrun, overwrite=overwrite)
 
-    if cmd == "lang":
-        try:
-            if sys.argv[2] == "--list":
-                list_.list_langtemplates()
-        except:
+
+def parse_filename_mode():
+    parser = argparse.ArgumentParser(prog="gen")
+    parser.add_argument("filename")
+    parser.add_argument("--dryrun", action="store_true")
+    parser.add_argument("--overwrite", action="store_true")
+    args = parser.parse_args()
+    handle_filename(args.filename, dryrun=args.dryrun, overwrite=args.overwrite)
+
+
+def parse_command_mode():
+    parser = argparse.ArgumentParser(
+        prog="gen",
+        add_help=False,  # Manual help
+    )
+    parser.add_argument("-h", "--help", action="store_true")
+
+    subparsers = parser.add_subparsers(dest="command")
+
+    # gen lang --list
+    lang_parser = subparsers.add_parser("lang")
+    lang_parser.add_argument("--list", action="store_true")
+
+    list_parser = subparsers.add_parser("list")
+
+    # gen tree -n / -r
+    tree_parser = subparsers.add_parser("tree")
+    tree_parser.add_argument("path", nargs="?", default=current_dir)
+    tree_parser.add_argument("-r", action="store_true", help="recursive")
+    tree_parser.add_argument("-d", type=int, default=1, help="depth (e.g. -d 2)")
+
+    # gen templates --list
+    template_parser = subparsers.add_parser("template")
+    template_parser.add_argument("--list", action="store_true")
+
+    # framework template generation
+    new_parser = subparsers.add_parser("new")
+    new_parser.add_argument("dir_name")
+    new_parser.add_argument("--lang", required=True)
+    new_parser.add_argument("--template", required=True)
+    new_parser.add_argument("--dryrun", action="store_true")
+
+    # gen doctor - diagnose environment
+    doctor_parser = subparsers.add_parser("doctor")
+
+    args = parser.parse_args()
+
+    if args.help:
+        helper.help()
+        return
+
+    if args.command == "lang":
+        if args.list:
+            list_.list_langtemplates()
+        else:
             helper.concise_help()
-    elif cmd in ["--list", "list"]:
+
+    elif args.command == "list":
         list_.list_langtemplates()
         list_.list_framtemplates()
-    # This has to be fix (Exception Handling)
-    elif cmd in ["--tree", "tree"]:
-        path = current_dir
-        depth = 1
-        try:
-            args = sys.argv[2:]  # args after tree
 
-            if not args:
-                pass
+    elif args.command == "tree":
+        path = os.path.join(current_dir, args.path)
+        depth = None if args.r else args.d
+        list_.tree_view(path=path, depth=depth)
 
-            elif len(args) == 1:
-                if args[0] == "-r":
-                    depth = None
-                elif args[0].startswith("-"):
-                    depth = int(args[0][1:])
-                else:
-                    path = os.path.join(current_dir, args[0])
-            elif len(args) >= 2:
-                path = os.path.join(current_dir, args[0])
-
-                if args[1] == "-r":
-                    depth = None
-                elif args[1].startswith("-"):
-                    depth = int(args[1][1:])
-
-            list_.tree_view(path=path, depth=depth)
-        except (ValueError, IndexError, OSError) as e:
-            print(f"tree error: {e}")
-            list_.tree_view(path=current_dir, depth=1)
-
-    elif cmd == "template":
-        try:
-            if sys.argv[2] == "--list":
-                list_.list_framtemplates()
-        except Exception as e:
-            print(e)
-            helper.concise_help()
-
-    elif cmd in ["-h", "--help", "help"]:
-        helper.help()
-    elif "." in cmd and len(sys.argv) >= 2:
-        try:
-            parts = sys.argv[1].split(".")
-            if len(parts) != 2:
-                raise ValueError("Filename must contain exactly one extension.")
-        except IndexError:
-            helper.concise_help()
-            sys.exit(1)
-        except ValueError as e:
-            print(e)
-            sys.exit(1)
-        filename, extension = parts[0], "." + parts[1]
-        if extension in EXTENSION_MAP.keys():
-            flag = sys.argv[2] if len(sys.argv) > 2 else None
-            if flag:
-                template.gen_langtemplate(filename, extension, flag=flag)
-            else:
-                template.gen_langtemplate(filename, extension)
+    elif args.command == "template":
+        if args.list:
+            list_.list_framtemplates()
         else:
-            print("Template does not exist.")
-            list_.list_langtemplates()
-    # check wheather lang has templates
-    elif (
-        cmd == "new"
-    ):  # gen new <project/dir> --lang <lang> --template <framework/lib> (optinal: --dryrun) args = 7
-        try:
-            if sys.argv[3] == "--lang" and sys.argv[5] == "--template":
-                dir_name, lang, framework_template = (
-                    sys.argv[2],
-                    sys.argv[4],
-                    sys.argv[6],
-                )
-                if len(sys.argv) == 7:
-                    template.gen_framtemplate(
-                        dir_name, lang, framework_template, flag=None
-                    )
-                elif len(sys.argv):
-                    flag = sys.argv[7]
-                    template.gen_framtemplate(
-                        dir_name, lang, framework_template, flag=flag
-                    )
-            else:
-                helper.concise_help()
-        except IndexError:
             helper.concise_help()
-        except Exception as e:
-            print(e)
+
+    elif args.command == "new":
+        flag = "--dryrun" if args.dryrun else None
+        template.gen_framtemplate(args.dir_name, args.lang, args.template, flag=flag)
+
+    elif args.command == "doctor":
+        from gen.commands import doctor
+
+        doctor.run_doctor()
+
     else:
         helper.concise_help()
+
+
+def main():
+    if len(sys.argv) > 1 and "." in sys.argv[1]:
+        parse_filename_mode()
+    else:
+        parse_command_mode()
+
+
+if __name__ == "__main__":
+    main()

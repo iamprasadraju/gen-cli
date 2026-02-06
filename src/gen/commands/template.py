@@ -11,34 +11,33 @@ from gen.core.render import render_framework
 working_dir = Path.cwd()
 
 
-def gen_langtemplate(file, extension, flag=None):
+def gen_langtemplate(file, extension, dryrun=False, overwrite=False):
     lang = EXTENSION_MAP.get(extension)
-
     filename = file + extension
-
-    create_path = os.path.join(working_dir, filename)  # Gives absolute path
+    create_path = os.path.join(working_dir, filename)
     template_name = f"main{extension}"
-
     template_path = resources.files("gen.templates").joinpath(lang, template_name)
 
-    # print(template_path)
     with open(template_path, "r") as template:
         # Reads the template (main.*)
         content = template.read()
-    if flag is None:
-        if os.path.isfile(create_path):  # check weather file exists
-            print("File is already exists")
+
+    if dryrun:
+        print(f"--- Dry run for {filename} ---")
+        print(content)
+        return
+
+    if os.path.exists(create_path):  # check weather file exists
+        if overwrite:
+            with open(create_path, "w") as f:
+                f.write(content)
+            print(f"{filename} overwritten!")
         else:
-            with open(create_path, "w") as file:
-                file.write(content)
-                print(f"{filename} created!")
+            print(f"{filename} already exists. Use --overwrite to replace it.")
     else:
-        if flag == "--dryrun":
-            print(content)
-        elif flag == "--overwrite":
-            with open(create_path, "w") as file:
-                file.write(content)
-                print(f"{filename} overwrited!")
+        with open(create_path, "w") as f:
+            f.write(content)
+        print(f"{filename} created!")
 
 
 def gen_framtemplate(dir_name, lang, framework, flag=None):
