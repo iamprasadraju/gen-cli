@@ -1,11 +1,16 @@
 import argparse
 import os
 import sys
+from importlib.metadata import version
 
-from gen.commands import helper, list_, template
+from gen.commands import helper, list_, template, doctor
 from gen.config import EXTENSION_MAP
 
 current_dir = os.getcwd()
+
+
+def get_version():
+    return version("gen-cli")
 
 
 def handle_filename(filename, dryrun=False, overwrite=False):
@@ -26,8 +31,8 @@ def handle_filename(filename, dryrun=False, overwrite=False):
 def parse_filename_mode():
     parser = argparse.ArgumentParser(prog="gen")
     parser.add_argument("filename")
-    parser.add_argument("--dryrun", action="store_true")
-    parser.add_argument("--overwrite", action="store_true")
+    parser.add_argument("--dryrun", action="store_true", default=False)
+    parser.add_argument("--overwrite", action="store_true", default=False)
     args = parser.parse_args()
     handle_filename(args.filename, dryrun=args.dryrun, overwrite=args.overwrite)
 
@@ -38,6 +43,7 @@ def parse_command_mode():
         add_help=False,  # Manual help
     )
     parser.add_argument("-h", "--help", action="store_true")
+    parser.add_argument("-v", "--version", action="store_true")
 
     subparsers = parser.add_subparsers(dest="command")
 
@@ -73,6 +79,10 @@ def parse_command_mode():
         helper.help()
         return
 
+    if args.version:
+        print(f"gen-cli version {get_version()}")
+        return
+
     if args.command == "lang":
         if args.list:
             list_.list_langtemplates()
@@ -99,8 +109,6 @@ def parse_command_mode():
         template.gen_framtemplate(args.dir_name, args.lang, args.template, flag=flag)
 
     elif args.command == "doctor":
-        from gen.commands import doctor
-
         doctor.run_doctor()
 
     else:
