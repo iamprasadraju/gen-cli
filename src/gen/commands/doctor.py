@@ -1,11 +1,19 @@
+"""
+Doctor command for gen-cli.
+"""
+
 import os
-import sys
 import platform
-from importlib.metadata import version, import_module
+import sys
+from importlib.metadata import import_module, version
 from importlib.resources import files
 
 
 class Colors:
+    """
+    Colors for the terminal.
+    """
+
     GREEN = "\033[92m"
     RED = "\033[91m"
     YELLOW = "\033[93m"
@@ -13,7 +21,14 @@ class Colors:
     ENDC = "\033[0m"
 
 
-def check_feature(name, func):
+def check_feature(name: str, func: callable) -> tuple[bool, str | None]:
+    """
+    Checks if a feature is working.
+
+    :param name: The name of the feature.
+    :param func: The function to check.
+    :return: A tuple of (success, error).
+    """
     try:
         func()
         return True, None
@@ -21,7 +36,10 @@ def check_feature(name, func):
         return False, str(e)
 
 
-def run_doctor():
+def run_doctor() -> None:
+    """
+    Runs the doctor command.
+    """
     print("=" * 50)
     print(f"{Colors.BLUE}Gen CLI Doctor{Colors.ENDC}")
     print("=" * 50)

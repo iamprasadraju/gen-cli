@@ -38,7 +38,12 @@ pipx install gen-cli
 ```bash
 git clone https://github.com/iamprasadraju/gen-cli.git
 cd gen-cli
+
+# Install for usage
 pip install -e .
+
+# Install for development (includes tests, linting tools)
+pip install -e .[dev]
 ```
 
 ### Verify Installation
@@ -257,6 +262,14 @@ Gen-CLI provides clear error messages for common issues:
 
 ## Development
 
+### Setup
+
+First, ensure you have installed the development dependencies:
+
+```bash
+pip install -e .[dev]
+```
+
 ### Running Tests
 
 ```bash
@@ -327,4 +340,3 @@ MIT License
 ## Author
 
 Prasad Raju G
-
