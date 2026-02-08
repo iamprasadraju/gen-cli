@@ -1,17 +1,33 @@
+"""
+CLI entry point for the gen-cli package.
+"""
+
 import argparse
 import os
 import sys
 from importlib.metadata import version
 
-from gen.commands import helper, list_, template, doctor
+from gen.commands import doctor, helper, list_, template
 from gen.config import EXTENSION_MAP
 
 
-def get_version():
+def get_version() -> str:
+    """
+    Returns the version of the gen-cli package.
+    """
     return version("gen-cli")
 
 
-def handle_filename(filename, dryrun=False, overwrite=False):
+def handle_filename(
+    filename: str, dryrun: bool = False, overwrite: bool = False
+) -> None:
+    """
+    Handles the filename argument.
+
+    :param filename: The filename to handle.
+    :param dryrun: Whether to dryrun the command.
+    :param overwrite: Whether to overwrite the file.
+    """
     name, ext = os.path.splitext(filename)
     if not ext:
         raise argparse.ArgumentTypeError(
@@ -26,7 +42,16 @@ def handle_filename(filename, dryrun=False, overwrite=False):
     template.gen_langtemplate(name, ext, dryrun=dryrun, overwrite=overwrite)
 
 
-def handle_filename(filename, dryrun=False, overwrite=False):
+def handle_filename(
+    filename: str, dryrun: bool = False, overwrite: bool = False
+) -> None:
+    """
+    Handles the filename argument.
+
+    :param filename: The filename to handle.
+    :param dryrun: Whether to dryrun the command.
+    :param overwrite: Whether to overwrite the file.
+    """
     name, ext = os.path.splitext(filename)
     if not ext:
         raise argparse.ArgumentTypeError(
@@ -41,7 +66,10 @@ def handle_filename(filename, dryrun=False, overwrite=False):
     template.gen_langtemplate(name, ext, dryrun=dryrun, overwrite=overwrite)
 
 
-def parse_filename_mode():
+def parse_filename_mode() -> None:
+    """
+    Parses the filename mode.
+    """
     parser = argparse.ArgumentParser(prog="gen")
     parser.add_argument("filename")
     parser.add_argument("--dryrun", action="store_true", default=False)
@@ -50,7 +78,10 @@ def parse_filename_mode():
     handle_filename(args.filename, dryrun=args.dryrun, overwrite=args.overwrite)
 
 
-def parse_command_mode():
+def parse_command_mode() -> None:
+    """
+    Parses the command mode.
+    """
     parser = argparse.ArgumentParser(
         prog="gen",
         add_help=True,
@@ -149,7 +180,10 @@ def parse_command_mode():
         helper.concise_help()
 
 
-def main():
+def main() -> None:
+    """
+    Main function.
+    """
     if len(sys.argv) > 1 and "." in sys.argv[1]:
         parse_filename_mode()
     else:
