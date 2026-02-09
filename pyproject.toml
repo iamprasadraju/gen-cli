@@ -22,6 +22,7 @@ package-dir = { "" = "src" }
 [tool.setuptools.packages.find]
 where = ["src"]
 
+# for the devs
 [project.optional-dependencies]
 dev = [
     "pylint>=3.3.8",
