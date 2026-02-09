@@ -274,10 +274,10 @@ pip install -e .[dev]
 
 ```bash
 # Run all tests
-python3 -m pytest tests/test_cli.py -v
+python3 -m pytest tests -v
 
 # Run specific test
-python3 -m pytest tests/test_cli.py::TestDoctor -v
+python3 -m pytest tests/test_list.py -v
 ```
 
 ### Test Coverage
