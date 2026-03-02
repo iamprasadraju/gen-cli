@@ -71,5 +71,10 @@ def gen_framtemplate(dir_name, lang, framework, flag=None):
         render_framework(framework_path, target_root, context)
         print(f"'{dir_name}' Created using template '{key}'")
     else:
-        shutil.copytree(framework_path, target_root, dirs_exist_ok=True)
+        shutil.copytree(
+            framework_path,
+            target_root,
+            dirs_exist_ok=True,
+            ignore=shutil.ignore_patterns("__pycache__"),
+        )
         print(f"{dir_name} is created using {framework} template ")
