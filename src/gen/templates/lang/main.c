@@ -1,6 +1,6 @@
 #include<stdio.h>
 
 int main(){
-    printf("Welcome to gen-cli!\n");
+    printf("Hello, World!");
     return 0;
 }

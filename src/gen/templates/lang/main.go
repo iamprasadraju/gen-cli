@@ -5,5 +5,5 @@ import (
 )
 
 func main() {
-	fmt.Println("Welcome to gen-cli!")
+	fmt.Println("Hello, World!")
 }

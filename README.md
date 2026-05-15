@@ -1,42 +1,24 @@
-# Gen-CLI
-
+<img src="gen-cli.svg" width="100px">
+    
 **Gen-CLI** is a Python-based command-line tool for generating boilerplate code and framework templates for multiple programming languages.
 
 ## Features
 
-- Single-file boilerplate generation based on file extension
-- Project scaffolding using language and framework templates
-- Directory tree visualization
+- Single-file boilerplate generation for multiple languages
+- Project scaffolding using framework templates
+- Colorful directory tree visualization
 - Environment diagnostics with `gen doctor`
-- Version information with `--version` / `-v`
 - Dry-run mode for previewing outputs
+- Overwrite support for existing files/directories
 
 ---
 
 ## Installation
 
-### Using pip
-
-```bash
-pip install gen-cli
-```
-
-### Using uv (Faster)
-
-```bash
-uv pip install gen-cli
-```
-
-### Using pipx (Isolated)
-
-```bash
-pipx install gen-cli
-```
-
 ### From Source
 
 ```bash
-git clone https://github.com/iamprasadraju/gen-cli.git
+git clone https://github.com/prasadrajug/gen-cli.git
 cd gen-cli
 
 # Install for usage
@@ -44,6 +26,12 @@ pip install -e .
 
 # Install for development (includes tests, linting tools)
 pip install -e .[dev]
+```
+
+### Using uv
+
+```bash
+uv sync
 ```
 
 ### Verify Installation
@@ -57,20 +45,23 @@ gen --version
 ## Quick Start
 
 ```bash
-# Generate a Python file
-gen main.py
+# Generate a C boilerplate file
+gen c
 
-# Generate a FastAPI project
-gen new myapp --lang python --template fastapi
+# Generate a Python boilerplate file
+gen py
+
+# Generate a Flask project
+gen flask
+
+# List available languages and frameworks
+gen list
+
+# Show directory tree
+gen tree
 
 # Check your environment
 gen doctor
-
-# List available templates
-gen list
-
-# Show version
-gen --version
 ```
 
 ---
@@ -86,18 +77,46 @@ gen --version
 gen -v
 ```
 
-Output: `gen-cli version 0.1.7`
+Output: `gen-cli version 1.0.0`
 
 ---
 
-### `gen --help` / `gen -h` / `gen help`
+### `gen --help` / `gen -h`
 
-Show the help message.
+Show the help message with all available commands and options.
 
 ```bash
 gen --help
 gen -h
-gen help
+```
+
+---
+
+### `gen list`
+
+List all available language templates and framework templates.
+
+```bash
+gen list
+```
+
+Output:
+```
+Available Languages
+-------------------
+  • .py
+  • .c
+  • .cpp
+  • .go
+  • .js
+  • .rs
+  • .html
+  • .java
+
+Available Frameworks
+--------------------
+  • flask
+  • codeforces
 ```
 
 ---
@@ -112,94 +131,58 @@ gen doctor
 
 Output:
 ```
-========================================
 Gen CLI Doctor
-========================================
-Python Version: 3.14.2
-Platform: macOS-15.7.3-arm64
-Working Directory: /Users/user/project
-PATH directories: 17
-========================================
-All checks passed!
-```
+----------------------------------------
+✓ Python Version: 3.13.12
+✓ Platform: Darwin 24.0.0
+✓ Working Directory: /Users/user/project
+✓ PATH directories: 17 found
 
----
-
-### `gen list`
-
-List all available language templates and framework templates.
-
-```bash
-gen list
+All checks passed
 ```
 
 ---
 
 ### `gen tree`
 
-Display a tree view of your directory structure.
+Display a colorful tree view of your directory structure.
 
 ```bash
-gen tree                    # current directory
-gen tree -r                 # recursive (all levels)
-gen tree -d 3               # depth of 3 levels
-gen tree path/to/dir        # specific directory
+gen tree                    # current directory, depth 2, no hidden
+gen tree -a                 # include hidden files/dirs
+gen tree -3                 # depth of 3 levels
+gen tree -3 src             # depth 3 of specific directory
+gen tree -2 -a .            # depth 2, include hidden, current dir
 ```
+
+**Tree options:**
+
+| Flag | Description |
+|------|-------------|
+| `-N` | Set depth (e.g., `-2`, `-3`) |
+| `-a`, `--all` | Include hidden files/dirs |
+
+**Colors:**
+
+- **Bold blue** — directories
+- **Green** — regular files
+- **Dim/gray** — hidden files and connectors
 
 ---
 
-### `gen new`
+### Language Generation
 
-Generate a new project from a language and framework template.
-
-```bash
-gen new <project_name> --lang <language> --template <template>
-```
-
-**Options:**
-
-| Flag | Description | Required |
-|------|-------------|----------|
-| `--lang` | Programming language | Yes |
-| `--template` | Framework or template name | Yes |
-| `--dryrun` | Preview without creating files | No |
-
-**Examples:**
+Generate a boilerplate file for a specific language.
 
 ```bash
-# Python projects
-gen new myapp --lang python --template fastapi
-gen new api --lang python --template flask
-gen new web --lang python --template django
-
-# Go projects
-gen new mytool --lang go --template cli
-gen new service --lang go --template web
-
-# Rust projects
-gen new server --lang rust --template actix
-gen new mylib --lang rust --template rocket
-
-# JavaScript projects
-gen new app --lang javascript --template react
-gen new api --lang javascript --template node
-```
-
----
-
-### Single File Generation
-
-Generate a boilerplate file directly by specifying its extension.
-
-```bash
-gen main.py          # Python file
-gen app.go           # Go file
-gen index.js         # JavaScript file
-gen main.rs          # Rust file
-gen main.c           # C file
-gen main.cpp         # C++ file
-gen main.java        # Java file
-gen index.html       # HTML file
+gen c           # creates main.c
+gen py          # creates main.py
+gen js          # creates main.js
+gen go          # creates main.go
+gen rs          # creates main.rs
+gen cpp         # creates main.cpp
+gen java        # creates main.java
+gen html        # creates main.html
 ```
 
 **Options:**
@@ -212,39 +195,76 @@ gen index.html       # HTML file
 **Examples:**
 
 ```bash
-gen main.py --dryrun          # Preview Python file
-gen app.py --overwrite        # Overwrite existing file
+gen c --dryrun              # preview main.c content
+gen py --overwrite          # overwrite main.py if exists
+gen js --dryrun --overwrite # dry run (overwrite ignored)
+```
+
+**When file already exists:**
+
+```bash
+gen c
+main.c already exists
+Use --overwrite to replace: gen c --overwrite
 ```
 
 ---
 
-## Supported Languages & Templates
+### Framework Generation
 
-| Language | Templates |
-|----------|-----------|
-| Python | flask, fastapi, django, lib, project |
-| Go | cli, web |
-| Rust | actix, rocket |
-| C | standard |
-| C++ | standard |
-| Java | spring, standard |
-| JavaScript | node, react, vue |
-| HTML | standard |
+Generate a full project from a framework template.
+
+```bash
+gen flask                   # prompts for project name
+gen flask myapp             # creates myapp/ directly
+gen codeforces              # prompts for project name
+gen codeforces solutions    # creates solutions/ directly
+```
+
+**Options:**
+
+| Flag | Description |
+|------|-------------|
+| `--dryrun` | Preview project structure without creating |
+| `--overwrite` | Remove existing directory and regenerate |
+
+**Examples:**
+
+```bash
+gen flask --dryrun          # preview flask project tree
+gen flask myapp --dryrun    # preview tree for 'myapp'
+gen flask myapp --overwrite # overwrite myapp/ if exists
+```
+
+**When directory already exists:**
+
+```bash
+gen flask myapp
+Directory 'myapp' already exists
+Use --overwrite to replace: gen flask myapp --overwrite
+```
 
 ---
 
-## File Extensions
+## Supported Languages
 
-| Extension | Language |
-|-----------|----------|
-| `.py` | Python |
-| `.go` | Go |
-| `.rs` | Rust |
-| `.c` | C |
-| `.cpp` | C++ |
-| `.java` | Java |
-| `.js` | JavaScript |
-| `.html` | HTML |
+| Command | Output File |
+|---------|-------------|
+| `gen c` | `main.c` |
+| `gen py` | `main.py` |
+| `gen js` | `main.js` |
+| `gen go` | `main.go` |
+| `gen rs` | `main.rs` |
+| `gen cpp` | `main.cpp` |
+| `gen java` | `main.java` |
+| `gen html` | `main.html` |
+
+## Supported Frameworks
+
+| Command | Description |
+|---------|-------------|
+| `gen flask` | Flask web application |
+| `gen codeforces` | Codeforces competitive programming setup |
 
 ---
 
@@ -252,11 +272,26 @@ gen app.py --overwrite        # Overwrite existing file
 
 Gen-CLI provides clear error messages for common issues:
 
-- **Invalid commands** → Displays help message
-- **Unsupported file extensions** → Lists available templates
-- **Invalid template combinations** → Shows valid options
-- **Tree errors** → Falls back to current directory
-- **Existing files/directories** → Shows appropriate message
+```bash
+# Unknown command
+gen xyz
+→ Unknown command: xyz
+  Usage: gen [list|doctor|tree|<lang>|<framework>] [-v|--version] [-h|--help]
+
+# Unknown flag
+gen c --invalid
+→ Unknown flag: --invalid
+  Usage: gen [list|doctor|<lang>|<framework>] [-v|--version] [-h|--help]
+
+# Invalid tree depth format
+gen tree 3
+→ Invalid depth format: '3'
+  Use '-' prefix for depth, e.g., 'gen tree -3' or 'gen tree -3 src'
+
+# Path not found
+gen tree nonexistent
+→ Path not found: nonexistent
+```
 
 ---
 
@@ -264,42 +299,24 @@ Gen-CLI provides clear error messages for common issues:
 
 ### Setup
 
-First, ensure you have installed the development dependencies:
-
 ```bash
-pip install -e .[dev]
+uv sync --all-extras
 ```
 
 ### Running Tests
 
 ```bash
 # Run all tests
-python3 -m pytest tests -v
+uv run pytest tests -v
 
-# Run specific test
-python3 -m pytest tests/test_list.py -v
+# Run specific test file
+uv run pytest tests/test_cli.py -v
 ```
-
-### Test Coverage
-
-| Test Class | Description |
-|------------|-------------|
-| `TestCLI` | Core CLI module tests |
-| `TestVersion` | Version command tests |
-| `TestFilenameMode` | Single file generation tests |
-| `TestDoctor` | Environment diagnostics tests |
-| `TestListCommand` | Template listing tests |
-| `TestTreeCommand` | Tree visualization tests |
-| `TestTemplateCommand` | Template generation tests |
-| `TestConfig` | Configuration tests |
-| `TestCore` | Core module tests |
-| `TestHelper` | Help command tests |
-| `TestMain` | Main entry point tests |
 
 ### Running from Source
 
 ```bash
-python3 -m gen.cli <command>
+uv run gen <command>
 ```
 
 ---
@@ -312,19 +329,21 @@ gen-cli/
 │   └── gen/
 │       ├── __init__.py
 │       ├── cli.py              # Main CLI entry point
-│       ├── config.py           # Configuration & extension maps
+│       ├── paths.py            # Template path resolution
 │       ├── commands/
 │       │   ├── __init__.py
 │       │   ├── doctor.py       # Environment diagnostics
 │       │   ├── helper.py       # Help messages
-│       │   ├── list_.py        # Template listing
-│       │   └── template.py     # Template generation
+│       │   ├── list_.py        # Template listing & tree view
+│       │   └── template.py     # Template generation helpers
 │       ├── core/
 │       │   ├── __init__.py
 │       │   └── render.py       # Jinja2 template rendering
 │       └── templates/          # Built-in templates
+│           ├── lang/           # Language boilerplate files
+│           └── frameworks/     # Framework project templates
 ├── tests/
-│   └── test_cli.py             # Comprehensive unit tests
+│   └── test_*.py               # Unit tests
 ├── pyproject.toml
 └── README.md
 ```

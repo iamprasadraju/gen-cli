@@ -1,78 +1,30 @@
-class colors:
-    GREEN = "\033[92m"
-    YELLOW = "\033[93m"
-    BLUE = "\033[94m"
-    ENDC = "\033[0m"
-
-
-HELP_TEXT = """
-Gen-CLI — Generate boilerplate files and framework project templates
-for multiple programming languages.
-
-USAGE:
-    gen <command> [arguments]
-
-COMMANDS:
-    gen <file.ext>           Generate a single file from extension (e.g. main.py)
-    gen new <name> --lang <lang> --template <template>  Create a project
-    gen list                 List all available templates
-    gen tree [path]          Show directory tree
-    gen tree -r              Show tree recursively
-    gen tree -d <n>          Show tree with depth n
-    gen doctor               Check environment and configuration
-    gen --version, -v        Show version
-    gen --help, -h           Show this help
-
-EXAMPLES:
-    gen main.py                    # Generate Python file
-    gen new myapp --lang python --template fastapi
-    gen tree                       # Current directory tree
-    gen tree -r                    # Recursive tree
-    gen tree -d 2                  # Tree with depth 2
-    gen doctor                     # Environment check
-    gen --version                  # Show version
-
-For more info on a command: gen <command> --help
-
-Supported Languages: python, go, rust, c, cpp, java, javascript, html
-"""
-
-
-COMMANDS_TEXT = """
-AVAILABLE COMMANDS:
-
-    gen <filename.extension>
-        Generate a single file (main.py, app.go, index.js, etc.)
-
-    gen new <name> --lang <lang> --template <template>
-        Generate a project from template
-
-    gen list
-        List all available templates
-
-    gen tree [path]
-        Show directory tree (default depth 1)
-
-    gen tree -r [path]
-        Show tree recursively (all levels)
-
-    gen tree -d <n> [path]
-        Show tree with depth n
-
-    gen doctor
-        Check environment and configuration
-
-    gen --version, -v
-        Show installed version
-
-    gen --help, -h
-        Show this help message
-"""
-
-
 def help():
-    print(colors.GREEN + HELP_TEXT + colors.ENDC)
+    print("Gen CLI - Generate boilerplate files and project templates")
+    print()
+    print("Usage: gen [command]")
+    print()
+    print("Commands:")
+    print("  list       List available languages and frameworks")
+    print("  doctor     Check system configuration")
+    print("  tree       Show directory tree (default depth: 2)")
+    print("  <lang>     Generate boilerplate for a language (e.g., c, py, js)")
+    print("  <framework> Generate a framework project (e.g., flask, codeforces)")
+    print()
+    print("Tree options:")
+    print("  gen tree -2         Show tree with depth 2")
+    print("  gen tree -3 path    Show tree of 'path' with depth 3")
+    print("  gen tree -a         Include hidden files/dirs")
+    print()
+    print("Generation options:")
+    print("  gen c --dryrun      Preview template without creating")
+    print("  gen c --overwrite   Overwrite existing file")
+    print("  gen flask myproject Specify project name directly")
+    print("  gen flask --dryrun  Preview project structure")
+    print()
+    print("Options:")
+    print("  -v, --version  Show version")
+    print("  -h, --help     Show this help message")
 
 
 def concise_help():
-    print(colors.GREEN + COMMANDS_TEXT + colors.ENDC)
+    print("Usage: gen [list|doctor|<lang>|<framework>] [-v|--version] [-h|--help]")

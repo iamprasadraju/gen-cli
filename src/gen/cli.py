@@ -1,193 +1,186 @@
-"""
-CLI entry point for the gen-cli package.
-"""
-
-import argparse
-import os
 import sys
-from importlib.metadata import version
+from importlib import metadata
+from pathlib import Path
 
-from gen.commands import doctor, helper, list_, template
-from gen.config import EXTENSION_MAP
-
-
-def get_version() -> str:
-    """
-    Returns the version of the gen-cli package.
-    """
-    return version("gen-cli")
+from .paths import langs, frameworks
+from .commands.list_ import print_list, tree_view, print_tree_structure
+from .commands.doctor import run_doctor
+from .commands.helper import help as show_help, concise_help
+from .core.render import render_framework
 
 
-def handle_filename(
-    filename: str, dryrun: bool = False, overwrite: bool = False
-) -> None:
-    """
-    Handles the filename argument.
+def get_version():
+    return metadata.version("gen-cli")
 
-    :param filename: The filename to handle.
-    :param dryrun: Whether to dryrun the command.
-    :param overwrite: Whether to overwrite the file.
-    """
-    name, ext = os.path.splitext(filename)
-    if not ext:
-        raise argparse.ArgumentTypeError(
-            "Filename must have an extension (e.g. main.py)"
-        )
 
-    if ext not in EXTENSION_MAP:
-        print(f"Template for {ext} does not exist.")
-        list_.list_langtemplates()
+def _parse_flags(args, valid_flags):
+    flags = {}
+    positional = []
+    unknown = []
+
+    for arg in args:
+        if arg.startswith("--"):
+            name = arg[2:]
+            if name in valid_flags:
+                flags[name] = True
+            else:
+                unknown.append(arg)
+        elif arg.startswith("-") and len(arg) > 1:
+            short = arg[1:]
+            matched = False
+            for v in valid_flags:
+                if v.startswith(short):
+                    flags[v] = True
+                    matched = True
+                    break
+            if not matched:
+                unknown.append(arg)
+        else:
+            positional.append(arg)
+
+    return flags, positional, unknown
+
+
+def parse_command_mode():
+    if len(sys.argv) > 1 and sys.argv[1] == "tree":
+        _handle_tree()
         return
 
-    template.gen_langtemplate(name, ext, dryrun=dryrun, overwrite=overwrite)
-
-
-def handle_filename(
-    filename: str, dryrun: bool = False, overwrite: bool = False
-) -> None:
-    """
-    Handles the filename argument.
-
-    :param filename: The filename to handle.
-    :param dryrun: Whether to dryrun the command.
-    :param overwrite: Whether to overwrite the file.
-    """
-    name, ext = os.path.splitext(filename)
-    if not ext:
-        raise argparse.ArgumentTypeError(
-            "Filename must have an extension (e.g. main.py)"
-        )
-
-    if ext not in EXTENSION_MAP:
-        print(f"Template for {ext} does not exist.")
-        list_.list_langtemplates()
-        return
-
-    template.gen_langtemplate(name, ext, dryrun=dryrun, overwrite=overwrite)
-
-
-def parse_filename_mode() -> None:
-    """
-    Parses the filename mode.
-    """
-    parser = argparse.ArgumentParser(prog="gen")
-    parser.add_argument("filename")
-    parser.add_argument("--dryrun", action="store_true", default=False)
-    parser.add_argument("--overwrite", action="store_true", default=False)
-    args = parser.parse_args()
-    handle_filename(args.filename, dryrun=args.dryrun, overwrite=args.overwrite)
-
-
-def parse_command_mode() -> None:
-    """
-    Parses the command mode.
-    """
-    parser = argparse.ArgumentParser(
-        prog="gen",
-        add_help=True,
-        description="Gen-CLI — Generate boilerplate files and project templates",
-        epilog="Use 'gen <command> --help' for more info on a command.",
-    )
-    parser.add_argument("-v", "--version", action="store_true", help="Show version")
-
-    subparsers = parser.add_subparsers(dest="command", metavar="<command>")
-
-    lang_parser = subparsers.add_parser("lang", help="Language operations")
-    lang_parser.add_argument(
-        "--list", action="store_true", help="List language templates"
-    )
-
-    subparsers.add_parser("list", help="List all templates")
-
-    tree_parser = subparsers.add_parser("tree", help="Show directory tree")
-    tree_parser.add_argument("path", nargs="?", default=None, help="Directory path")
-    tree_parser.add_argument("-r", action="store_true", help="Recursive (all levels)")
-    tree_parser.add_argument(
-        "-d", type=int, default=None, dest="depth", help="Depth level"
-    )
-
-    template_parser = subparsers.add_parser("template", help="Template operations")
-    template_parser.add_argument(
-        "--list", action="store_true", help="List framework templates"
-    )
-
-    new_parser = subparsers.add_parser("new", help="Generate a new project")
-    new_parser.add_argument("dir_name", help="Project name")
-    new_parser.add_argument("--lang", required=True, help="Programming language")
-    new_parser.add_argument("--template", required=True, help="Framework or template")
-    new_parser.add_argument(
-        "--dryrun", action="store_true", help="Preview without creating files"
-    )
-
-    subparsers.add_parser("doctor", help="Check environment and configuration")
-
-    args = parser.parse_args()
-
-    if args.version:
+    if len(sys.argv) == 2 and sys.argv[1] in ("--version", "-v"):
         print(f"gen-cli version {get_version()}")
         return
 
-    if not args.command:
-        parser.print_help()
+    if len(sys.argv) == 2 and sys.argv[1] in ("--help", "-h"):
+        show_help()
         return
 
-    if args.command == "lang":
-        if args.list:
-            list_.list_langtemplates()
-        else:
-            helper.concise_help()
+    if len(sys.argv) < 2:
+        show_help()
+        return
 
-    elif args.command == "list":
-        list_.list_langtemplates()
-        list_.list_framtemplates()
+    command = sys.argv[1]
+    parser_flags, positional, unknown = _parse_flags(
+        sys.argv[2:], {"dryrun", "overwrite"}
+    )
 
-    elif args.command == "tree":
-        depth = 1
-        path = os.getcwd()
+    if unknown:
+        print(f"Unknown flag: {unknown[0]}")
+        concise_help()
+        return
 
-        if args.r:
-            depth = None
-        elif args.depth:
-            depth = args.depth
-        elif args.path and args.path.startswith("-"):
-            try:
-                depth = int(args.path[1:])
-            except ValueError:
-                pass
+    dryrun = parser_flags.get("dryrun", False)
+    overwrite = parser_flags.get("overwrite", False)
 
-        if args.path and not args.path.startswith("-"):
-            if os.path.isdir(args.path):
-                path = args.path
-            else:
-                path = args.path
-
-        list_.tree_view(path=path, depth=depth)
-
-    elif args.command == "template":
-        if args.list:
-            list_.list_framtemplates()
-        else:
-            helper.concise_help()
-
-    elif args.command == "new":
-        flag = "--dryrun" if args.dryrun else None
-        template.gen_framtemplate(args.dir_name, args.lang, args.template, flag=flag)
-
-    elif args.command == "doctor":
-        doctor.run_doctor()
-
+    if command == "list":
+        print_list("Available Languages", [ext[1:] for ext in langs.values()])
+        print_list("Available Frameworks", list(frameworks.values()))
+    elif command == "doctor":
+        run_doctor()
+    elif f".{command}" in langs.values():
+        _generate_lang(command, dryrun=dryrun, overwrite=overwrite)
+    elif command in frameworks.values():
+        project_name = positional[0] if len(positional) > 0 else None
+        _generate_framework(command, project_name=project_name, dryrun=dryrun, overwrite=overwrite)
     else:
-        helper.concise_help()
+        print(f"Unknown command: {command}")
+        concise_help()
 
 
-def main() -> None:
-    """
-    Main function.
-    """
-    if len(sys.argv) > 1 and "." in sys.argv[1]:
-        parse_filename_mode()
-    else:
-        parse_command_mode()
+def _generate_lang(lang, dryrun=False, overwrite=False):
+    template_file = None
+    for path, ext in langs.items():
+        if ext == f".{lang}":
+            template_file = Path(path)
+            break
+
+    if template_file is None or not template_file.exists():
+        print(f"Template for '{lang}' not found")
+        return
+
+    output_name = template_file.name
+    dest = Path.cwd() / output_name
+
+    if dryrun:
+        content = template_file.read_text()
+        print(f"--- Dry run: {output_name} ---")
+        print(content)
+        return
+
+    if dest.exists() and not overwrite:
+        print(f"{output_name} already exists")
+        print(f"Use --overwrite to replace: gen {lang} --overwrite")
+        return
+
+    if dest.exists() and overwrite:
+        dest.write_text(template_file.read_text())
+        print(f"Overwritten {output_name}")
+        return
+
+    dest.write_text(template_file.read_text())
+    print(f"Generated {output_name}")
+
+
+def _generate_framework(framework, project_name=None, dryrun=False, overwrite=False):
+    template_dir = None
+    for path, name in frameworks.items():
+        if name == framework:
+            template_dir = Path(path)
+            break
+
+    if template_dir is None or not template_dir.exists():
+        print(f"Template for '{framework}' not found")
+        return
+
+    if project_name is None and not dryrun:
+        project_name = input("Enter project name: ").strip() or framework
+
+    if project_name is None:
+        project_name = framework
+
+    target = Path.cwd() / project_name
+
+    if dryrun:
+        print(f"--- Dry run: {framework} project '{project_name}' ---")
+        print_tree_structure(template_dir, project_name)
+        return
+
+    if target.exists() and not overwrite:
+        print(f"Directory '{project_name}' already exists")
+        print(f"Use --overwrite to replace: gen {framework} {project_name} --overwrite")
+        return
+
+    if target.exists() and overwrite:
+        import shutil
+        shutil.rmtree(target)
+
+    context = {"project_name": project_name}
+    render_framework(str(template_dir), target, context)
+    print(f"Generated {framework} project in {project_name}/")
+
+
+def _handle_tree():
+    remaining = sys.argv[2:]
+    depth = 2
+    path = "."
+    show_hidden = False
+
+    for arg in remaining:
+        if arg.startswith("-") and arg[1:].isdigit():
+            depth = int(arg[1:])
+        elif arg in ("-a", "--all"):
+            show_hidden = True
+        elif arg.isdigit():
+            print(f"Invalid depth format: '{arg}'")
+            print("Use '-' prefix for depth, e.g., 'gen tree -3' or 'gen tree -3 src'")
+            return
+        elif not arg.startswith("-"):
+            path = arg
+
+    tree_view(path=path, depth=depth, show_hidden=show_hidden)
+
+
+def main():
+    parse_command_mode()
 
 
 if __name__ == "__main__":
