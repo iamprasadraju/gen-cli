@@ -25,6 +25,12 @@
 
 ## Installation
 
+### PyPi PIP
+
+```bash
+pip install gen-cli
+```
+
 ### From Source
 
 ```bash
