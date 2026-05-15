@@ -1,0 +1,25 @@
+name: Publish to PyPI
+
+on:
+  push:
+    tags:
+      - "v*"
+
+jobs:
+  publish:
+    name: Build and publish Python distribution
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Install uv
+        uses: astral-sh/setup-uv@v5
+
+      - name: Build package
+        run: uv build
+
+      - name: Publish to PyPI
+        # This injects your GitHub Secret securely into the uv publish command
+        run: uv publish --token ${{ secrets.PYPI_API_TOKEN }}
