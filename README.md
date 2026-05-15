@@ -1,6 +1,8 @@
-<img src="gen-cli.svg" width="100px">
-    
-**Gen-CLI** is a Python-based command-line tool for generating boilerplate code and framework templates for multiple programming languages.
+<p align="center">
+  <img src="gen-cli.svg" width="120" alt="Gen-CLI Logo">
+  <br>
+  <b>Gen-CLI</b> is a Python-based command-line tool for generating boilerplate code and framework templates for multiple programming languages.
+</p>
 
 ## Features
 
