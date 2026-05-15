@@ -22,9 +22,9 @@ classifiers = [
 dependencies = ["Jinja2>=3.1.6"]
 
 [project.urls]
-Homepage = "https://github.com/prasadrajug/gen-cli"
-Repository = "https://github.com/prasadrajug/gen-cli"
-Issues = "https://github.com/prasadrajug/gen-cli/issues"
+Homepage = "https://github.com/iamprasadraju/gen-cli"
+Repository = "https://github.com/iamprasadraju/gen-cli"
+Issues = "https://github.com/iamprasadraju/gen-cli/issues"
 
 [build-system]
 requires = ["setuptools>=61"]

@@ -4,6 +4,14 @@
   <b>Gen-CLI</b> is a Python-based command-line tool for generating boilerplate code and framework templates for multiple programming languages.
 </p>
 
+<p align="center">
+  <a href="https://pypi.org/project/gen-cli/"><img src="https://img.shields.io/pypi/v/gen-cli.svg" alt="PyPI Version"></a>
+  <a href="https://github.com/iamprasadraju/gen-cli/actions/workflows/ci.yaml"><img src="https://github.com/iamprasadraju/gen-cli/actions/workflows/ci.yaml/badge.svg" alt="CI"></a>
+  <a href="https://www.python.org/downloads/"><img src="https://img.shields.io/badge/python-3.13+-blue.svg" alt="Python"></a>
+  <a href="LICENSE"><img src="https://img.shields.io/badge/license-MIT-green.svg" alt="License"></a>
+  <a href="https://github.com/psf/black"><img src="https://img.shields.io/badge/code%20style-black-000000.svg" alt="Code style"></a>
+</p>
+
 ## Features
 
 - Single-file boilerplate generation for multiple languages
@@ -20,7 +28,7 @@
 ### From Source
 
 ```bash
-git clone https://github.com/prasadrajug/gen-cli.git
+git clone https://github.com/iamprasadraju/gen-cli.git
 cd gen-cli
 
 # Install for usage
